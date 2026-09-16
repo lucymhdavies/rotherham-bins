@@ -63,7 +63,12 @@ class RotherhamBinsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         choices = {str(address.premise_id): address.label for address in self._addresses}
         if user_input is not None:
             address = next(item for item in self._addresses if str(item.premise_id) == user_input[CONF_PREMISE_ID])
-            return await self._async_create_entry(address.premise_id, address.label, address.postcode or self._postcode)
+            return await self._async_create_entry(
+                address.premise_id,
+                address.label,
+                address.postcode or self._postcode,
+                "address",
+            )
         return self.async_show_form(
             step_id="address",
             data_schema=vol.Schema({vol.Required(CONF_PREMISE_ID): vol.In(choices)}),
@@ -84,24 +89,47 @@ class RotherhamBinsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             user_input[CONF_PREMISE_ID],
             user_input[CONF_ADDRESS],
             " ".join(user_input[CONF_POSTCODE].upper().split()),
+            "manual",
         )
 
-    async def _async_create_entry(self, premise_id: int, address: str, postcode: str) -> ConfigFlowResult:
+    async def _async_create_entry(
+        self,
+        premise_id: int,
+        address: str,
+        postcode: str,
+        step_id: str,
+    ) -> ConfigFlowResult:
         """Validate a premise and create the config entry."""
         await self.async_set_unique_id(str(premise_id))
         self._abort_if_unique_id_configured()
+        if step_id == "address":
+            data_schema = vol.Schema(
+                {
+                    vol.Required(CONF_PREMISE_ID): vol.In(
+                        {str(item.premise_id): item.label for item in self._addresses}
+                    )
+                }
+            )
+        else:
+            data_schema = vol.Schema(
+                {
+                    vol.Required(CONF_PREMISE_ID, default=premise_id): vol.Coerce(int),
+                    vol.Required(CONF_ADDRESS, default=address): str,
+                    vol.Optional(CONF_POSTCODE, default=postcode): str,
+                }
+            )
         try:
             collections = await RotherhamBinsApi(async_get_clientsession(self.hass)).get_collections(premise_id)
         except (RotherhamBinsConnectionError, RotherhamBinsResponseError):
             return self.async_show_form(
-                step_id="manual",
-                data_schema=vol.Schema({vol.Required(CONF_PREMISE_ID, default=premise_id): vol.Coerce(int)}),
+                step_id=step_id,
+                data_schema=data_schema,
                 errors={"base": "cannot_connect"},
             )
         if not collections:
             return self.async_show_form(
-                step_id="manual",
-                data_schema=vol.Schema({vol.Required(CONF_PREMISE_ID, default=premise_id): vol.Coerce(int)}),
+                step_id=step_id,
+                data_schema=data_schema,
                 errors={"base": "no_collections"},
             )
         data = {
