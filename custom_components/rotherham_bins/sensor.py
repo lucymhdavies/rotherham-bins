@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 import re
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -51,6 +51,7 @@ class RotherhamBinsSensorBase(SensorEntity):
 
     _attr_has_entity_name = True
     _attr_should_poll = False
+    _attr_device_class = SensorDeviceClass.DATE
 
     def __init__(self, coordinator: RotherhamBinsCoordinator, entry: ConfigEntry) -> None:
         self.coordinator = coordinator
