@@ -73,22 +73,22 @@ Home Assistant's Discord integration must be configured first. Its notification 
 Replace these placeholders before saving the automation:
 
 - `notify.home_assistant_notifications` with your actual Discord notification action
-- `sensor.rotherham_bins_black_bin_collection` with the black-bin sensor created for your property
+- `sensor.rotherham_bins_next_collection` with the next-collection sensor created for your property
 - `YOUR_DISCORD_CHANNEL_ID` with the Discord channel ID
 - `YOUR_DISCORD_ROLE_ID` with an optional role ID, or remove the mention
 
-This example checks once each morning and sends a message when the black bin is collected tomorrow:
+This example checks once each morning and sends a message when any bin is collected tomorrow. The bin colour/type is read from the sensor's `bin_type` attribute:
 
 ```yaml
-alias: Rotherham Bins - Black bin tomorrow
-description: Notify Discord about tomorrow's black bin collection
+alias: Rotherham Bins - Collection tomorrow
+description: Notify Discord about tomorrow's bin collection
 triggers:
   - trigger: time
     at: "06:00:00"
 conditions:
   - condition: template
     value_template: >-
-      {% set collection = states('sensor.rotherham_bins_black_bin_collection') %}
+      {% set collection = states('sensor.rotherham_bins_next_collection') %}
       {{ collection not in ['unknown', 'unavailable', 'none']
          and as_datetime(collection).date() == (now().date() + timedelta(days=1)) }}
 actions:
@@ -96,14 +96,16 @@ actions:
     data:
       target: "YOUR_DISCORD_CHANNEL_ID"
       message: >-
-        The black bin is collected tomorrow ({{
-        states('sensor.rotherham_bins_black_bin_collection') }}).
+        The {{ state_attr('sensor.rotherham_bins_next_collection', 'bin_type') | lower
+        }} is collected tomorrow ({{ states('sensor.rotherham_bins_next_collection') }}).
 
         <@&YOUR_DISCORD_ROLE_ID>
       data:
         embed:
           title: Rotherham Bins
-          description: Black bin collection tomorrow
+          description: >-
+            {{ state_attr('sensor.rotherham_bins_next_collection', 'bin_type') }}
+            collection tomorrow
           url: http://homeassistant.local:8123
           color: 199363
 mode: single
