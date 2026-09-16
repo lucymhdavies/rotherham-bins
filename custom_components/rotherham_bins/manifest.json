@@ -1,0 +1,11 @@
+{
+  "domain": "rotherham_bins",
+  "name": "Rotherham Bins",
+  "version": "0.1.0",
+  "codeowners": ["@lucymhdavies"],
+  "config_flow": true,
+  "documentation": "https://github.com/lucymhdavies/rotherham-bins",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": []
+}
