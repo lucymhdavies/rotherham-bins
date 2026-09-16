@@ -1,0 +1,34 @@
+title: Rotherham Bins
+views:
+  - title: Bins
+    path: bins
+    icon: mdi:trash-can-outline
+    cards:
+      - type: markdown
+        title: Upcoming collections
+        content: |
+          {% set collections = state_attr('sensor.rotherham_bins_next_collection', 'upcoming_collections') or [] %}
+          {% if collections %}
+          {% for collection in collections %}
+          **{{ as_datetime(collection.date).strftime('%A %-d %B %Y') }}** - {{ collection.bin_type | title }}
+          {% endfor %}
+          {% else %}
+          No upcoming collection data is available.
+          {% endif %}
+
+      - type: entities
+        title: Next collection by bin type
+        entities:
+          - entity: sensor.rotherham_bins_next_collection
+            name: Any bin
+            secondary_info: last-updated
+          # Replace these example entities with the bin sensors created for your property.
+          - entity: sensor.rotherham_bins_black_bin_collection
+            name: Black bin
+            secondary_info: last-updated
+          - entity: sensor.rotherham_bins_pink_bin_collection
+            name: Pink bin
+            secondary_info: last-updated
+          - entity: sensor.rotherham_bins_green_bin_collection
+            name: Green bin
+            secondary_info: last-updated

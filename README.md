@@ -66,6 +66,12 @@ Entity attributes include:
 
 The API returns labels such as `BLACK BIN`, `PINK BIN`, and `GREEN BIN`. The integration preserves the normalized label and does not assume that Rotherham will only use these three types.
 
+## Dashboard example
+
+The repository includes [dashboard.example.yaml](dashboard.example.yaml), which contains a complete Lovelace view. It displays the `upcoming_collections` attribute in API order with formatted dates and bin colours/types, followed by the next date for each example bin sensor.
+
+Before importing the view, replace `sensor.rotherham_bins_next_collection` and the example per-bin entity IDs with the entity IDs created for your property. The markdown card remains generic and will show any bin types returned by the API.
+
 ## Discord notification automation
 
 Home Assistant's Discord integration must be configured first. Its notification action name depends on the name of the Discord application you create. The current Discord documentation is available at <https://www.home-assistant.io/integrations/discord/>.
