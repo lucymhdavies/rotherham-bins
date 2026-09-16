@@ -7,7 +7,8 @@ views:
       - type: markdown
         title: Upcoming collections
         content: |
-          {% set collections = state_attr('sensor.rotherham_bins_next_collection', 'upcoming_collections') or [] %}
+          {% set next_sensor = 'sensor.rotherham_bins_next_collection' %}
+          {% set collections = state_attr(next_sensor, 'upcoming_collections') or [] %}
           {% if collections %}
           {% for collection in collections %}
           **{{ as_datetime(collection.date).strftime('%A %-d %B %Y') }}** - {{ collection.bin_type | title }}
@@ -15,6 +16,24 @@ views:
           {% else %}
           No upcoming collection data is available.
           {% endif %}
+
+      - type: markdown
+        title: Collection timing
+        content: |
+          {% set bins = [
+            ('Black bin', 'sensor.rotherham_bins_black_bin_collection'),
+            ('Green bin', 'sensor.rotherham_bins_green_bin_collection'),
+            ('Pink bin', 'sensor.rotherham_bins_pink_bin_collection')
+          ] %}
+          {% for name, entity_id in bins %}
+          {% set value = states(entity_id) %}
+          {% if value not in ['unknown', 'unavailable', 'none'] %}
+          {% set days = (as_datetime(value).date() - now().date()).days %}
+          **{{ name }}** - {{ as_datetime(value).strftime('%A %-d %B %Y') }} ({{ 'today' if days == 0 else 'tomorrow' if days == 1 else 'in ' ~ days ~ ' days' if days > 1 else days|abs ~ ' days ago' }})
+          {% else %}
+          **{{ name }}** - unavailable
+          {% endif %}
+          {% endfor %}
 
       - type: entities
         title: Next collection by bin type

@@ -1,42 +1,42 @@
 {
-  "config": {
-    "step": {
-      "user": {
-        "title": "Set up Rotherham Bins",
-        "description": "Choose how to identify your Rotherham property.",
-        "menu_options": {
-          "postcode": "Look up an address by postcode",
-          "manual": "Enter a Premise ID manually"
+    "config": {
+        "step": {
+            "user": {
+                "title": "Set up Rotherham Bins",
+                "description": "Choose how to identify your Rotherham property.",
+                "menu_options": {
+                    "postcode": "Look up an address by postcode",
+                    "manual": "Enter a Premise ID manually"
+                }
+            },
+            "postcode": {
+                "title": "Find your address",
+                "description": "Enter the postcode used by Rotherham Council.",
+                "data": {
+                    "postcode": "Postcode"
+                }
+            },
+            "address": {
+                "title": "Select your address",
+                "description": "Select the property whose collection schedule you want to use.",
+                "data": {
+                    "premise_id": "Address"
+                }
+            },
+            "manual": {
+                "title": "Enter property details",
+                "description": "Use the Premise ID from the Rotherham Bins API or postcode lookup.",
+                "data": {
+                    "premise_id": "Premise ID",
+                    "address": "Address name",
+                    "postcode": "Postcode"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Unable to contact the Rotherham Bins service.",
+            "no_addresses": "No addresses were found for that postcode.",
+            "no_collections": "No collections were returned for that Premise ID."
         }
-      },
-      "postcode": {
-        "title": "Find your address",
-        "description": "Enter the postcode used by Rotherham Council.",
-        "data": {
-          "postcode": "Postcode"
-        }
-      },
-      "address": {
-        "title": "Select your address",
-        "description": "Select the property whose collection schedule you want to use.",
-        "data": {
-          "premise_id": "Address"
-        }
-      },
-      "manual": {
-        "title": "Enter property details",
-        "description": "Use the Premise ID from the Rotherham Bins API or postcode lookup.",
-        "data": {
-          "premise_id": "Premise ID",
-          "address": "Address name",
-          "postcode": "Postcode"
-        }
-      }
-    },
-    "error": {
-      "cannot_connect": "Unable to contact the Rotherham Bins service.",
-      "no_addresses": "No addresses were found for that postcode.",
-      "no_collections": "No collections were returned for that Premise ID."
     }
-  }
 }

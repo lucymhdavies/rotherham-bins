@@ -68,9 +68,9 @@ The API returns labels such as `BLACK BIN`, `PINK BIN`, and `GREEN BIN`. The int
 
 ## Dashboard example
 
-The repository includes [dashboard.example.yaml](dashboard.example.yaml), which contains a complete Lovelace view. It displays the `upcoming_collections` attribute in API order with formatted dates and bin colours/types, followed by the next date for each example bin sensor.
+The repository includes [dashboard.example.yaml](dashboard.example.yaml), which contains a complete Lovelace view. It displays the `upcoming_collections` attribute in API order with formatted dates and bin colours/types, followed by relative timing such as `today`, `tomorrow`, or `in 7 days` for each example bin sensor.
 
-Before importing the view, replace `sensor.rotherham_bins_next_collection` and the example per-bin entity IDs with the entity IDs created for your property. The markdown card remains generic and will show any bin types returned by the API.
+Before importing the view, replace `sensor.rotherham_bins_next_collection`, the three bin entity IDs in the `bins` list, and the entity IDs in the entities card with the entity IDs created for your property. Home Assistant may prefix these IDs with an anonymized address slug. The first markdown card will show any bin types returned by the API.
 
 ## Discord notification automation
 
@@ -100,12 +100,9 @@ conditions:
 actions:
   - action: notify.home_assistant_notifications
     data:
-      target: "YOUR_DISCORD_CHANNEL_ID"
       message: >-
         The {{ state_attr('sensor.rotherham_bins_next_collection', 'bin_type') | lower
         }} is collected tomorrow ({{ states('sensor.rotherham_bins_next_collection') }}).
-
-        <@&YOUR_DISCORD_ROLE_ID>
       data:
         embed:
           title: Rotherham Bins
@@ -113,11 +110,21 @@ actions:
             {{ state_attr('sensor.rotherham_bins_next_collection', 'bin_type') }}
             collection tomorrow
           url: http://homeassistant.local:8123
-          color: 199363
+          color: >-
+            {% set bin_colour = state_attr(
+              'sensor.rotherham_bins_next_collection', 'bin_type'
+            ) | lower | replace(' bin', '') | trim %}
+            {{ {
+              'black': 0,
+              'green': 5025616,
+              'pink': 15277667
+            }.get(bin_colour, 199363) }}
+      target:
+        - "YOUR_DISCORD_CHANNEL_ID"
 mode: single
 ```
 
-The Discord bot needs permission to send messages and embed links in the target channel. Discord channel IDs can be copied after enabling Developer Mode in Discord.
+The Discord bot needs permission to send messages and embed links in the target channel. Discord channel IDs can be copied after enabling Developer Mode in Discord. To mention a role, append `<@&YOUR_DISCORD_ROLE_ID>` to the message after replacing the placeholder with a real role ID.
 
 ## Troubleshooting
 

@@ -1,6 +1,6 @@
 {
-  "name": "Rotherham Bins",
-  "content_in_root": false,
-  "homeassistant": "2024.1.0",
-  "country": "GB"
+    "name": "Rotherham Bins",
+    "content_in_root": false,
+    "homeassistant": "2024.1.0",
+    "country": "GB"
 }
