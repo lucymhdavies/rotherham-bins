@@ -6,6 +6,15 @@ from custom_components.rotherham_bins.api import (
     parse_addresses,
     parse_collections,
 )
+from custom_components.rotherham_bins.config_flow import _migrated_object_id
+
+
+def test_migrated_entity_object_ids_are_stable() -> None:
+    assert _migrated_object_id("123_next", "123") == "rotherham_bins_next_collection"
+    assert _migrated_object_id("123_black_bin", "123") == "rotherham_bins_black_collection"
+    assert _migrated_object_id("123_pink_bin", "123") == "rotherham_bins_pink_collection"
+    assert _migrated_object_id("123_green_bin", "123") == "rotherham_bins_green_collection"
+    assert _migrated_object_id("456_black_bin", "123") is None
 
 
 def test_parse_addresses_normalizes_fields() -> None:

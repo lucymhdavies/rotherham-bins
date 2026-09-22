@@ -7,6 +7,7 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import Address, RotherhamBinsApi, RotherhamBinsConnectionError, RotherhamBinsResponseError
@@ -18,6 +19,18 @@ from .const import (
     DOMAIN,
     LOCAL_AUTHORITY,
 )
+
+def _migrated_object_id(unique_id: str, premise_id: str) -> str | None:
+    """Return the stable object ID for a legacy sensor unique ID."""
+    prefix = f"{premise_id}_"
+    if not unique_id.startswith(prefix):
+        return None
+    suffix = unique_id.removeprefix(prefix)
+    if suffix == "next":
+        return "rotherham_bins_next_collection"
+    if not suffix.endswith("_bin"):
+        return None
+    return f"rotherham_bins_{suffix.removesuffix('_bin')}_collection"
 
 
 class RotherhamBinsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -139,3 +152,36 @@ class RotherhamBinsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_LOCAL_AUTHORITY: LOCAL_AUTHORITY,
         }
         return self.async_create_entry(title=address or f"Premise {premise_id}", data=data)
+
+    @staticmethod
+    @config_entries.callback
+    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
+        """Return the options flow for an existing property."""
+        return RotherhamBinsOptionsFlow()
+
+
+class RotherhamBinsOptionsFlow(config_entries.OptionsFlow):
+    """Handle optional entity ID migration for an existing property."""
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Show available maintenance actions."""
+        return self.async_show_menu(step_id="init", menu_options=["migrate"])
+
+    async def async_step_migrate(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Migrate existing address-based entity IDs on explicit request."""
+        if user_input is None:
+            return self.async_show_form(step_id="migrate")
+
+        entity_registry = er.async_get(self.hass)
+        premise_id = str(self.config_entry.data[CONF_PREMISE_ID])
+        for entity in er.async_entries_for_config_entry(entity_registry, self.config_entry.entry_id):
+            if entity.domain != "sensor":
+                continue
+            object_id = _migrated_object_id(entity.unique_id, premise_id)
+            if object_id is None:
+                continue
+            new_entity_id = f"sensor.{object_id}"
+            if entity.entity_id != new_entity_id and entity_registry.async_get(new_entity_id) is None:
+                entity_registry.async_update_entity(entity.entity_id, new_entity_id=new_entity_id)
+
+        return self.async_create_entry(title="", data={})

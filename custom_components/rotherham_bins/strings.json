@@ -38,5 +38,20 @@
             "no_addresses": "No addresses were found for that postcode.",
             "no_collections": "No collections were returned for that Premise ID."
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Rotherham Bins maintenance",
+                "menu_options": {
+                    "migrate": "Migrate entity IDs"
+                }
+            },
+            "migrate": {
+                "title": "Migrate entity IDs",
+                "description": "Rename existing address-based entity IDs to stable Rotherham Bins IDs. This only runs when you submit this action.",
+                "data": {}
+            }
+        }
     }
 }
