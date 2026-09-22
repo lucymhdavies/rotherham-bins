@@ -86,6 +86,7 @@ class RotherhamBinsNextSensor(RotherhamBinsSensorBase):
 
     _attr_name = "Next collection"
     _attr_icon = "mdi:trash-can-outline"
+    _attr_suggested_object_id = "rotherham_bins_next_collection"
 
     def __init__(self, coordinator: RotherhamBinsCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coordinator, entry)
@@ -114,6 +115,7 @@ class RotherhamBinsTypeSensor(RotherhamBinsSensorBase):
         self._attr_name = f"{bin_type.title()} collection"
         self._attr_icon = "mdi:trash-can"
         self._attr_unique_id = f"{entry.data[CONF_PREMISE_ID]}_{_slug(bin_type)}"
+        self._attr_suggested_object_id = f"rotherham_bins_{_slug(bin_type.removesuffix(' BIN'))}_collection"
 
     @property
     def _next_collection(self) -> Collection | None:
