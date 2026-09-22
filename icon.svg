@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Rotherham Bins</title>
+  <desc id="desc">A trash can divided into pink, black, pink, and green quarters.</desc>
+  <defs>
+    <clipPath id="can-shape">
+      <path d="M128 144h256l-17 288a24 24 0 0 1-24 23H169a24 24 0 0 1-24-23z"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#can-shape)">
+    <path d="M128 144h256v312H128z" fill="#ef6f9f"/>
+    <path d="M271 144h113L128 456H15z" fill="#171717"/>
+    <path d="M497 144h103L344 456H241z" fill="#62b85a"/>
+  </g>
+
+  <path d="M128 144h256l-17 288a24 24 0 0 1-24 23H169a24 24 0 0 1-24-23z" fill="none" stroke="#171717" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M112 135h288M192 135v-24a16 16 0 0 1 16-16h96a16 16 0 0 1 16 16v24" fill="none" stroke="#171717" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M216 190v192M296 190v192" stroke="#171717" stroke-width="14" stroke-linecap="round"/>
+</svg>
